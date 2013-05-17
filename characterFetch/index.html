@@ -5,12 +5,31 @@
 		<script src="includes/jquery-1.9.1.min.js"></script>
 		<script src="includes/underscore-min.js"></script>
 		<script src="includes/backbone-min.js"></script>
+		<script src="includes/utils.js"></script>
 
 		<script src="app.js"></script>
+		<style>
+			body {font: 14px/16px Verdana,Arial,Helvetica,sans-serif;}
+			label {font-weight: bold; width: 130px; display: inline-block; text-align: right;}
+		</style>
 	</head>
 	<body>
 		<div id="main-container">
 
 		</div>
+		<!-- Define templates -->
+		<script type="text/html" id="tpl-character">
+			<div class='lvl-1' id="char_name"><label>Character Name:</label> <%= name.first %></div>
+			<div class='lvl-1' id="char_id"><label>ID:</label> <%= id %></div>
+			<div class='lvl-1' id="battlerank"><label>Battle Rank:</label> <%= battle_rank.value %></div>
+			<div class='lvl-1' id="battlerank_percenttonext"><label>Percent to Next:</label> <%= battle_rank.percent_to_next %>%</div>
+			<div class='lvl-1' id="lastlogin"><label>Last Login:</label> <%= UTILS.timestampToDate(times.last_login, true) %></div>
+			<div class='lvl-1' id="lastsave"><label>Last Save:</label> <%= UTILS.timestampToDate(times.last_save, true) %></div>
+			<div class='lvl-1' id="createddate"><label>Created On:</label> <%= UTILS.timestampToDate(times.creation, true) %></div>
+			<div class='lvl-1' id="logincount"><label>Logins:</label> <%= times.login_count %></div>
+			<div class='lvl-1' id="timeplayed"><label>Time Played:</label> <%= UTILS.convertMilliToTime(times.minutes_played * 60 * 1000, true) %></div>
+			<div class='lvl-1' id="certsavailable"><label>Cert Available:</label> <%= certs.available_points %></div>
+			<div class='lvl-1' id="certstotal"><label>Cert Total:</label> <%= certs.earned_points %></div>
+		</script>
 	</body>
 </html>
