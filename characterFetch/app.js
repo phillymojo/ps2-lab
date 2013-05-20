@@ -6,7 +6,9 @@ $(function(){
 	//Create a top level global object to store our models/veiws/configs/etc.
 	appSettings = {models: {}, views: {}};
 	appSettings.char_id = '5428013610387904065';
-	appSettings.censusURL = 'https://census.soe.com/get/ps2/';
+	appSettings.censusURL = 'https://census.soe.com/get/';
+	appSettings.censusGame = 'ps2';
+	appSettings.censusGame = 'ps2-beta';
 
 
 	//Define the charModel
@@ -18,6 +20,7 @@ $(function(){
 
 		url: function(){
 			return appSettings.censusURL 
+			+ appSettings.censusGame + '/'
 			+ 'character/'
 			+ appSettings.char_id 
 			+ this.resolves
