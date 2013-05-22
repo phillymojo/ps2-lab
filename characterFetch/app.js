@@ -4,18 +4,18 @@ $(function(){
 	console.log('app started')
 
 	//Create a top level global object to store our models/veiws/configs/etc.
-	appSettings = {models: {}, views: {}};
+	appSettings = {models: {}, views: {}, dataManipulators: {}};
 	appSettings.char_id = '5428013610387904065';
 	appSettings.censusURL = 'https://census.soe.com/get/';
 	appSettings.censusGame = 'ps2';
-	appSettings.censusGame = 'ps2-beta';
+	// appSettings.censusGame = 'ps2-beta';
 
 
 	//Define the charModel
 	appSettings.models.CharacterModel = Backbone.Model.extend({
 		initialize: function(){
-			this.resolves = '?c:resolve=friends,stat,stat_history,weapon_stat,item_full(type),active_profile(name.en,id,icon),world,outfit(alias,id,name),online_status&c:internal=true';
-			this.resolves = '?c:internal=true'
+			this.resolves = '?c:resolve=friends,stat,stat_history,weapon_stat,item_full(type),world,outfit(alias,id,name),online_status&c:internal=true';
+			// this.resolves = '?c:internal=true'
 		},
 
 		url: function(){
@@ -37,19 +37,26 @@ $(function(){
 			return Backbone.sync(method, model, params);
 		},
 		parse: function(response){
-			var data = response.character_list[0];
-			console.log(data);
+			var rawchardata = response.character_list[0];
+			
+			console.log(rawchardata);
+			console.log(appSettings.dataManipulators.vehicleStats(rawchardata.weapon_stats));
+			console.log(appSettings.dataManipulators.itemStats(rawchardata.weapon_stats));
+			console.log(appSettings.dataManipulators.characterStats(rawchardata.stats));
 
-			return data;
+
+
+
+			return rawchardata;
 		}
 	});
 
-	appSettings.dataManipulator = function(response){
+
+	appSettings.dataManipulators.vehicleStats = function(weaponStats){
 		/**
 		This data manipulator is expecting to get an unfiltered list of item stats(character_list[0].weapon_stats) via the c:resolve=weapon_stat paramater on the charcter data URL request
-		It converts the raw list of stats into indexed lists for both vehicles and items
-		*/
-		var weaponStats = response.character_list[0].weapon_stats;
+		It converts the raw list of stats into indexed lists for both vehicles
+		*/		
 
 		/**Create a list of items and their stats by group*/
 		var groupedItemsList = _.groupBy(weaponStats, 'item_id');
@@ -72,9 +79,21 @@ $(function(){
 				if(appSettings.vehicleTable[vehicleRecord.id])	vehicleRecord['name'] = appSettings.vehicleTable[vehicleRecord.id].name.en;
 			});
 		}
-		console.log('masterVehicleStatsByID', masterVehicleStatsByID)
 
+		return masterVehicleStatsByID;
 
+	};
+
+	appSettings.dataManipulators.itemStats = function(weaponStats){
+		/**
+		This data manipulator is expecting to get an unfiltered list of item stats(character_list[0].weapon_stats) via the c:resolve=weapon_stat paramater on the charcter data URL request
+		It converts the raw list of stats into indexed lists for items
+		*/
+
+		/**Create a list of items and their stats by group*/
+		var groupedItemsList = _.groupBy(weaponStats, 'item_id');
+		//At this point we have an indexed list of all the item ids; the '0' object is the list of vehicles' stats
+		
 		/**Create the master list of items, with the vehicles removed*/
 		var masterItemStatsByID = {};
 		var weaponprefix = 'i_';
@@ -85,23 +104,32 @@ $(function(){
 			_.each(item, function(stat){
 				masterItemStatsByID[weaponprefix+key][stat.stat_name] = {'value': stat.value, 'last_save': stat.last_save};
 			});
-		})
+		});
 		//add the item name if it exists in appSettings.itemsTable
 		if(appSettings.itemsTable) {
 			_.each(masterItemStatsByID, function(itemRecord){
 				if(appSettings.itemsTable['item_'+itemRecord.id]) itemRecord['name'] = appSettings.itemsTable['item_'+itemRecord.id].name.en;
 			});
 		}
-		console.log('masterItemStatsByID',masterItemStatsByID);
+		return masterItemStatsByID;
 
-
-		/**Looking for the unfiltered list of Character Stats */
-		var charStats = response.character_list[0].stats;
-
-		var groupedProfileList = _.groupBy(charStats, 'profile_id');
-		console.log(groupedProfileList)
 	},
 
+	appSettings.dataManipulators.characterStats = function(charStats){
+		var groupedProfileList = _.groupBy(charStats, 'profile_id');
+
+		var masterCharStatsByProfile = {};
+		var profileprefix = 'p_';
+
+		_.each(groupedProfileList, function(profile, key, list){
+			masterCharStatsByProfile[profileprefix+key] = {'id': key};
+			_.each(profile, function(stat){
+				masterCharStatsByProfile[profileprefix+key][stat.stat_name] = stat;
+			});
+		});
+		
+		return masterCharStatsByProfile;
+	},
 
 
 	//Define the CharView
