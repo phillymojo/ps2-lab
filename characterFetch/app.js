@@ -6,6 +6,65 @@ appSettings.char_id = '5428013610387904065';
 appSettings.censusURL = 'https://census.soe.com/get/';
 appSettings.censusGame = 'ps2';
 
+$(function(){
+	//DOM Ready
+	console.log('app started')
+
+	//Create a top level global object to store our models/veiws/configs/etc.
+	appSettings = {models: {}, views: {}, dataManipulators: {}};
+	appSettings.char_id = '8994893040388800785'; // Main Character 'CCustodioVSM'
+	appSettings.char_id = '8994893040388801217'; // Main Characer 'RickGutz'
+	appSettings.char_id = '8994893040388801345'; // Main Character KDuken
+	appSettings.char_id = '8994927807628967953'; // Main Charactetr BulletTooth
+	appSettings.char_id = '5428010618020696081'; // Live Character BuzzCutPsycho
+	appSettings.char_id = '5428010618035589553'; // Live Character Daddy
+	appSettings.char_id = '5428010618035493729'; // Live Character ScourgeOfTheServer
+	appSettings.char_id = '5428010618031028529'; //Live Character Dizasta
+	appSettings.char_id = '5428010917270598289';
+
+	appSettings.censusURL = 'https://census.soe.com/get/';
+	appSettings.censusGame = 'ps2';
+	// appSettings.censusGame = 'ps2-beta';
+
+
+	//Define the charModel
+	appSettings.models.CharacterModel = Backbone.Model.extend({
+		initialize: function(){
+			this.resolves = '?c:resolve=stat,stat_history,weapon_stat,stat_by_faction,weapon_stat_by_faction&c:internal=true';
+			// this.resolves = '?c:internal=true'
+		},
+
+		url: function(){
+			return appSettings.censusURL 
+			+ appSettings.censusGame + '/'
+			+ 'character/'
+			+ appSettings.char_id 
+			+ this.resolves
+		},
+		sync: function(method, model, options){
+			var params = _.extend({
+				type: 'GET',
+				dataType: 'jsonp',
+				url: model.url(),
+				processData: false,
+				cache: true
+			}, options)
+
+			return Backbone.sync(method, model, params);
+		},
+		parse: function(response){
+			var chardata = response.character_list[0];
+			var rawstats = _.clone(chardata.stats);
+			delete chardata.stats;
+
+			// console.log(appSettings.dataManipulators.vehicleStats(rawstats.weapon_stat));
+			// console.log(appSettings.dataManipulators.itemStats(rawstats.weapon_stat));
+			// console.log(appSettings.dataManipulators.characterStats(rawstats.stat));
+			console.log(_.groupBy(rawstats.stat, 'stat_name'))
+			console.log(_.groupBy(rawstats.stat_by_faction, 'profile_id'))
+			console.log(_.groupBy(rawstats.weapon_stat, 'vehicle_id'))
+			console.log(_.groupBy(rawstats.weapon_stat_by_faction, 'item_id'))
+			console.log(_.groupBy(rawstats.stat_history, 'stat_name'))
 
 //Define the charModel
 appSettings.models.CharacterModel = Backbone.Model.extend({
@@ -64,6 +123,8 @@ appSettings.dataManipulators.vehicleStats = function(weaponStats){
 		_.each(vehicle, function(stat){
 			masterVehicleStatsByID[vehicleprefix+key][stat.stat_name] = {'value': stat.value, 'last_save': stat.last_save};
 		});
+			return chardata;
+		}
 	});
 	//add the vehicle name if it exists in appSettings.vehicleTable
 	if(appSettings.vehicleTable) {
@@ -101,6 +162,48 @@ appSettings.dataManipulators.itemStats = function(weaponStats){
 	if(appSettings.itemsTable) {
 		_.each(masterItemStatsByID, function(itemRecord){
 			if(appSettings.itemsTable['item_'+itemRecord.id]) itemRecord['name'] = appSettings.itemsTable['item_'+itemRecord.id].name.en;
+
+		/**Create a master list of the Vehicle Stats (no weapons involved) */
+		var masterVehicleStatsByID = {};
+		var vehicleprefix = 'v_';
+		var groupedVehiclesList = _.groupBy(groupedItemsList[0], 'vehicle_id');
+		_.each(groupedVehiclesList, function(vehicle, key, list){
+			masterVehicleStatsByID[vehicleprefix+key] = {'id': key};
+			_.each(vehicle, function(stat){
+				masterVehicleStatsByID[vehicleprefix+key][stat.stat_name] = {'value': stat.value, 'last_save': stat.last_save, 'vehicle_id': stat.vehicle_id};
+			});
+		});
+		//add the vehicle name if it exists in appSettings.vehicleTable
+		if(appSettings.vehicleTable) {
+			_.each(masterVehicleStatsByID, function(vehicleRecord){
+				if(appSettings.vehicleTable[vehicleRecord.id])	vehicleRecord['name'] = appSettings.vehicleTable[vehicleRecord.id].name.en;
+			});
+		}
+
+		return masterVehicleStatsByID;
+
+	};
+
+	appSettings.dataManipulators.itemStats = function(weaponStats){
+		/**
+		This data manipulator is expecting to get an unfiltered list of item stats(character_list[0].weapon_stats) via the c:resolve=weapon_stat paramater on the charcter data URL request
+		It converts the raw list of stats into indexed lists for items
+		*/
+
+		/**Create a list of items and their stats by group*/
+		var groupedItemsList = _.groupBy(weaponStats, 'item_id');
+		//At this point we have an indexed list of all the item ids; the '0' object is the list of vehicles' stats
+		
+		/**Create the master list of items, with the vehicles removed*/
+		var masterItemStatsByID = {};
+		var weaponprefix = 'i_';
+		delete groupedItemsList[0]; //remove the vehicle stats; not needed for itemslist
+
+		_.each(groupedItemsList, function(item, key, list){
+			masterItemStatsByID[weaponprefix+key] = {'id': key};
+			_.each(item, function(stat){
+				masterItemStatsByID[weaponprefix+key][stat.stat_name] = {'value': stat.value, 'last_save': stat.last_save, 'vehicle_id': stat.vehicle_id};
+			});
 		});
 	}
 	return masterItemStatsByID;
@@ -155,4 +258,6 @@ $(function(){
 		},
 	});	
 });
+		}
+	});
 
