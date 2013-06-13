@@ -12,10 +12,6 @@ $(function(){
 
 	//Create a top level global object to store our models/veiws/configs/etc.
 	appSettings = {models: {}, views: {}, dataManipulators: {}};
-	appSettings.char_id = '8994893040388800785'; // Main Character 'CCustodioVSM'
-	appSettings.char_id = '8994893040388801217'; // Main Characer 'RickGutz'
-	appSettings.char_id = '8994893040388801345'; // Main Character KDuken
-	appSettings.char_id = '8994927807628967953'; // Main Charactetr BulletTooth
 	appSettings.char_id = '5428010618020696081'; // Live Character BuzzCutPsycho
 	appSettings.char_id = '5428010618035589553'; // Live Character Daddy
 	appSettings.char_id = '5428010618035493729'; // Live Character ScourgeOfTheServer

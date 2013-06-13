@@ -74,8 +74,20 @@ PS2CharWidget = {
 
     loadChar: function(response){
         var chardata = response.single_character_by_id_list[0];
-        var frag = '<div>' + chardata.name.first + '</div>'
-
+        console.log(chardata);
+        var frag = '<div>Name: ' + chardata.name.first + '</div>' + 
+                   '<div>ID: ' + chardata.id + '</div>' +
+                   '<div>BR: ' + chardata.battle_rank.value + '</div>' +
+                   '<div>Percent to Next: '+ chardata.battle_rank.percent_to_next + '</div>'
+                   /*
+            <div class='lvl-1' id="lastlogin"><label>Last Login:</label> <%= UTILS.timestampToDate(times.last_login, true) %></div>
+            <div class='lvl-1' id="lastsave"><label>Last Save:</label> <%= UTILS.timestampToDate(times.last_save, true) %></div>
+            <div class='lvl-1' id="createddate"><label>Created On:</label> <%= UTILS.timestampToDate(times.creation, true) %></div>
+            <div class='lvl-1' id="logincount"><label>Logins:</label> <%= times.login_count %></div>
+            <div class='lvl-1' id="timeplayed"><label>Time Played:</label> <%= UTILS.convertMilliToTime(times.minutes_played * 60 * 1000, true) %></div>
+            <div class='lvl-1' id="certsavailable"><label>Cert Available:</label> <%= certs.available_points %></div>
+            <div class='lvl-1' id="certstotal"><label>Cert Total:</label> <%= certs.earned_points %></div>
+*/
         jQuery('#my_unique_id .c').html(frag);
     }
 }
