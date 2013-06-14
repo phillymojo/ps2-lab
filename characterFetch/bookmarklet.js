@@ -138,3 +138,16 @@ function jqueryLessThan(version){
     return false;
 }
 
+function divWrapper(content, class, id){
+    var divcontent = content || null;
+    var divclass = class || null;
+    var divid = id || null;
+
+    var newdiv = document.createElement('div');
+    if(divid) newdiv.id = divid;
+    if(divclass) newdiv.class = divclass;
+    if(divcontent) newdiv.innerHTML = divcontent;
+
+    return newdiv;
+}
+
