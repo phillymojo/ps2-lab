@@ -15,8 +15,8 @@ PS2CharWidget = {
                 var myCSS, 
                     myStyleNode,
                 /* add the css */
-                myCSS  = '#my_unique_id, #my_unique_id *{font-family:Courier,"Courier New",sans-serif;color:#333;line-height:1.5em;font-size:15px;margin:0;padding:0;text-shadow:none;}';
-                myCSS += '#my_unique_id {overflow: hidden;width: 200px; height: 400px; z-index:10000;position:fixed;top:10px;right:0;background-color:#ccc;}';
+                myCSS  = '#my_unique_id, #my_unique_id *{font-family:Arial,Helvetica,sans-serif;color:#333;line-height:1.5em;font-size:14px;margin:0;padding:0;text-shadow:none;}';
+                myCSS += '#my_unique_id {overflow: hidden;width: 300px; z-index:10000;position:fixed;top:10px;right:0;background-color:#ccc; text-align: left;}';
                 myCSS += '#my_unique_id .c {}';
                 myCSS += '#my_unique_id h1 {font-size:20px; margin-bottom:0.5em;color:#0080C0}';
                 myCSS += '#my_unique_id p {margin-bottom:0.5em;}';
@@ -60,7 +60,7 @@ PS2CharWidget = {
             this.myWidget = document.getElementById("my_unique_id");
 
             jQuery.ajax({
-                url: 'https://census.soe.com/get/ps2/single_character_by_id/?id=5428013610387904065',
+                url: 'https://census.soe.com/get/ps2/single_character_by_id/?id='+ps2char_id,
                 dataType: 'jsonp'
             }).done(function(data, textStatus, jqXHR) {
                 if(textStatus == 'success'){
@@ -75,19 +75,23 @@ PS2CharWidget = {
     loadChar: function(response){
         var chardata = response.single_character_by_id_list[0];
         console.log(chardata);
-        var frag = '<div>Name: ' + chardata.name.first + '</div>' + 
-                   '<div>ID: ' + chardata.id + '</div>' +
-                   '<div>BR: ' + chardata.battle_rank.value + '</div>' +
-                   '<div>Percent to Next: '+ chardata.battle_rank.percent_to_next + '</div>'
+        var factionmap = {'1': 'vs', '2': 'nc', '3': 'tr'}
+        var gender = (chardata.head_id > 0 && chardata.head_id < 5) ? 'male' : 'female';
+        var frag = '<div>Name: ' + chardata.name.first + '</div>'
+                 + '<div>ID: ' + chardata.id + '</div>'
+                 + '<div>BR: ' + chardata.battle_rank.value + '</div>'
+                 + '<div>Percent to Next: '+ chardata.battle_rank.percent_to_next + '</div>'
+                 + '<div>Last Login: '+ UTILS.timestampToDate(chardata.times.last_login, true) + '</div>'
+                 + '<div>Last Save: '+ UTILS.timestampToDate(chardata.times.last_save, true) + '</div>'
+                 + '<div>Created Date: '+ UTILS.timestampToDate(chardata.times.creation, true) + '</div>'
                    /*
-            <div class='lvl-1' id="lastlogin"><label>Last Login:</label> <%= UTILS.timestampToDate(times.last_login, true) %></div>
-            <div class='lvl-1' id="lastsave"><label>Last Save:</label> <%= UTILS.timestampToDate(times.last_save, true) %></div>
-            <div class='lvl-1' id="createddate"><label>Created On:</label> <%= UTILS.timestampToDate(times.creation, true) %></div>
             <div class='lvl-1' id="logincount"><label>Logins:</label> <%= times.login_count %></div>
             <div class='lvl-1' id="timeplayed"><label>Time Played:</label> <%= UTILS.convertMilliToTime(times.minutes_played * 60 * 1000, true) %></div>
             <div class='lvl-1' id="certsavailable"><label>Cert Available:</label> <%= certs.available_points %></div>
             <div class='lvl-1' id="certstotal"><label>Cert Total:</label> <%= certs.earned_points %></div>
-*/
+            */
+            + '<img src="https://players.planetside2.com/images/player/profile/char-default-'+factionmap[chardata.faction_id]+'-'+chardata.active_profile_id+'-'+gender+'.png">' 
+
         jQuery('#my_unique_id .c').html(frag);
     }
 }
