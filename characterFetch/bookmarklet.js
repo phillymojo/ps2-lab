@@ -5,11 +5,16 @@ PS2CharWidget = {
     initBookmarklet: function(){
         _this = this;
 
+        //load UTILS ????
+        var script = document.createElement('script');        
+        script.src = 'http://localhost:8000/ps2-lab/characterFetch/includes/utils.js';
+        
+        document.getElementsByTagName('head')[0].appendChild(script);
+
         if(this.myWidget){
             this.myWidget.parentNode.removeChild(this.myWidget);
             this.myWidget = null;
         } else {
-
             /* only put the CSS Styles on the page once */
             if(!document.getElementById('PS2CharWidgetStyle')) {
                 var myCSS, 
@@ -58,13 +63,14 @@ PS2CharWidget = {
             /* inject the node, with the event attached */
             document.body.appendChild(myHTMLNode);
             this.myWidget = document.getElementById("my_unique_id");
+            console.log(typeof UTILS);
 
             jQuery.ajax({
                 url: 'https://census.soe.com/get/ps2/single_character_by_id/?id='+ps2char_id,
                 dataType: 'jsonp'
             }).done(function(data, textStatus, jqXHR) {
                 if(textStatus == 'success'){
-                    PS2CharWidget.loadChar(data);
+                    PS2CharWidget.processChar(data);
                 } else {
                     console.log('data error');
                 }
@@ -72,7 +78,7 @@ PS2CharWidget = {
         }
     },
 
-    loadChar: function(response){
+    processChar: function(response){
         var chardata = response.single_character_by_id_list[0];
         console.log(chardata);
         var factionmap = {'1': 'vs', '2': 'nc', '3': 'tr'}
@@ -142,16 +148,16 @@ function jqueryLessThan(version){
     return false;
 }
 
-function divWrapper(content, class, id){
-    var divcontent = content || null;
-    var divclass = class || null;
-    var divid = id || null;
+// function divWrapper(content, class, id){
+//     var divcontent = content || null;
+//     var divclass = class || null;
+//     var divid = id || null;
 
-    var newdiv = document.createElement('div');
-    if(divid) newdiv.id = divid;
-    if(divclass) newdiv.class = divclass;
-    if(divcontent) newdiv.innerHTML = divcontent;
+//     var newdiv = document.createElement('div');
+//     if(divid) newdiv.id = divid;
+//     if(divclass) newdiv.class = divclass;
+//     if(divcontent) newdiv.innerHTML = divcontent;
 
-    return newdiv;
-}
+//     return newdiv;
+// }
 
