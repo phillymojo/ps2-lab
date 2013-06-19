@@ -88,7 +88,8 @@ PS2CharWidget = {
             <div class='lvl-1' id="certsavailable"><label>Cert Available:</label> <%= certs.available_points %></div>
             <div class='lvl-1' id="certstotal"><label>Cert Total:</label> <%= certs.earned_points %></div>
 */
-        jQuery('#my_unique_id .c').html(frag);
+        + divWrapper({'content': 'New Content', 'class': 'new_class', 'id': 'new_id', 'asText': true});
+        jQuery('#my_unique_id .c').append(frag);
     }
 }
 
@@ -138,16 +139,28 @@ function jqueryLessThan(version){
     return false;
 }
 
-function divWrapper(content, class, id){
-    var divcontent = content || null;
-    var divclass = class || null;
-    var divid = id || null;
+/**options
+    -content [string]
+    -class [string]
+    -id [string]
+    -asText [boolean]
+*/
+function divWrapper(options){
+    var divcontent = options.content || null;
+    var divclass = options.class || null;
+    var divid = options.id || null;
 
     var newdiv = document.createElement('div');
     if(divid) newdiv.id = divid;
     if(divclass) newdiv.class = divclass;
     if(divcontent) newdiv.innerHTML = divcontent;
 
-    return newdiv;
+    if(options.asText){
+        var tmp = document.createElement('div');
+        tmp.appendChild(newdiv);
+        return tmp.innerHTML;
+    } else {
+        return newdiv
+    }
 }
 
