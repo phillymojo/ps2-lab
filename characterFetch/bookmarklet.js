@@ -95,16 +95,11 @@ PS2CharWidget = {
             <div class='lvl-1' id="timeplayed"><label>Time Played:</label> <%= UTILS.convertMilliToTime(times.minutes_played * 60 * 1000, true) %></div>
             <div class='lvl-1' id="certsavailable"><label>Cert Available:</label> <%= certs.available_points %></div>
             <div class='lvl-1' id="certstotal"><label>Cert Total:</label> <%= certs.earned_points %></div>
-<<<<<<< HEAD
 */
-        + divWrapper({'content': 'New Content', 'class': 'new_class', 'id': 'new_id', 'asText': true});
+                + divWrapper({'content': 'New Content', 'class': 'new_class', 'id': 'new_id', 'asText': true})        
+                + '<img src="https://players.planetside2.com/images/player/profile/char-default-'+factionmap[chardata.faction_id]+'-'+chardata.active_profile_id+'-'+gender+'.png">' 
         jQuery('#my_unique_id .c').append(frag);
-=======
-            */
-            + '<img src="https://players.planetside2.com/images/player/profile/char-default-'+factionmap[chardata.faction_id]+'-'+chardata.active_profile_id+'-'+gender+'.png">' 
-
         jQuery('#my_unique_id .c').html(frag);
->>>>>>> 259a59b70d1b344f2baf1f591895d4e8b505d253
     }
 }
 
@@ -154,7 +149,6 @@ function jqueryLessThan(version){
     return false;
 }
 
-<<<<<<< HEAD
 /**options
     -content [string]
     -class [string]
@@ -165,19 +159,17 @@ function divWrapper(options){
     var divcontent = options.content || null;
     var divclass = options.class || null;
     var divid = options.id || null;
-=======
+
 // function divWrapper(content, class, id){
 //     var divcontent = content || null;
 //     var divclass = class || null;
 //     var divid = id || null;
->>>>>>> 259a59b70d1b344f2baf1f591895d4e8b505d253
 
-//     var newdiv = document.createElement('div');
-//     if(divid) newdiv.id = divid;
-//     if(divclass) newdiv.class = divclass;
-//     if(divcontent) newdiv.innerHTML = divcontent;
+    var newdiv = document.createElement('div');
+    if(divid) newdiv.id = divid;
+    if(divclass) newdiv.class = divclass;
+    if(divcontent) newdiv.innerHTML = divcontent;
 
-<<<<<<< HEAD
     if(options.asText){
         var tmp = document.createElement('div');
         tmp.appendChild(newdiv);
@@ -186,8 +178,4 @@ function divWrapper(options){
         return newdiv
     }
 }
-=======
-//     return newdiv;
-// }
->>>>>>> 259a59b70d1b344f2baf1f591895d4e8b505d253
 
