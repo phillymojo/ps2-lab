@@ -1,1 +1,5 @@
+<!--This script loads the main 'engine' JS for the bookmarketlet.
+	If it detects if the script/obj already exists; if so, it just instantiates it instead of reloading
+	In this case, it is looking for [obj]PS2CharWidget; if it doesn't exist, load bookmarklet.js.
+-->
 <a href="javascript:(function(){window.ps2char_id='5428010618015189713';if(typeof PS2CharWidget != 'object'){var script=document.createElement('script');script.src='http://localhost:8000/ps2-lab/characterFetch/bookmarklet.js?t='+(new Date().getTime());document.body.appendChild(script);}else{PS2CharWidget.initBookmarklet()}})()">Linky</a>

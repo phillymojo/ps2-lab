@@ -6,12 +6,16 @@ PS2CharWidget = {
         _this = this;
 
         //load UTILS ????
-        var script = document.createElement('script');        
+        var script = document.createElement('script');
+
+        //be sure to start up local web server at the /projects level.
+        //when live, this will be hard coded to the live location; i.e. www.morganbonar.com/characterFetch/includes/utils.js     
         script.src = 'http://localhost:8000/ps2-lab/characterFetch/includes/utils.js';
         
         document.getElementsByTagName('head')[0].appendChild(script);
 
         if(this.myWidget){
+            //check for existing instance; if found remove it (i.e. if someone clicks the bookmarklet multiple times, treat it as a close button)
             this.myWidget.parentNode.removeChild(this.myWidget);
             this.myWidget = null;
         } else {
@@ -56,15 +60,16 @@ PS2CharWidget = {
             }
          
             /* to add MORE scripts */
-        //    var myScriptNode=document.createElement('script');
-        //    myScriptNode.setAttribute('src','http://some.js/file.more.js');
-        //    document.head.appendChild(myScriptNode);
+            // var myScriptNode=document.createElement('script');
+            // myScriptNode.setAttribute('src','http://some.js/file.more.js');
+            // document.head.appendChild(myScriptNode);
          
             /* inject the node, with the event attached */
             document.body.appendChild(myHTMLNode);
             this.myWidget = document.getElementById("my_unique_id");
-            console.log(typeof UTILS);
+            //console.log(typeof UTILS);
 
+            //do the magic; get the the chatacter data from Census
             jQuery.ajax({
                 url: 'https://census.soe.com/get/ps2/single_character_by_id/?id='+ps2char_id,
                 dataType: 'jsonp'
@@ -80,24 +85,25 @@ PS2CharWidget = {
 
     processChar: function(response){
         var chardata = response.single_character_by_id_list[0];
-        console.log(chardata);
+        //console.log(chardata);
         var factionmap = {'1': 'vs', '2': 'nc', '3': 'tr'}
         var gender = (chardata.head_id > 0 && chardata.head_id < 5) ? 'male' : 'female';
-        var frag = '<div>Name: ' + chardata.name.first + '</div>'
+        var frag =/*   '<div>Name: ' + chardata.name.first + '</div>'
                  + '<div>ID: ' + chardata.id + '</div>'
                  + '<div>BR: ' + chardata.battle_rank.value + '</div>'
                  + '<div>Percent to Next: '+ chardata.battle_rank.percent_to_next + '</div>'
                  + '<div>Last Login: '+ UTILS.timestampToDate(chardata.times.last_login, true) + '</div>'
                  + '<div>Last Save: '+ UTILS.timestampToDate(chardata.times.last_save, true) + '</div>'
                  + '<div>Created Date: '+ UTILS.timestampToDate(chardata.times.creation, true) + '</div>'
-                   /*
-            <div class='lvl-1' id="logincount"><label>Logins:</label> <%= times.login_count %></div>
-            <div class='lvl-1' id="timeplayed"><label>Time Played:</label> <%= UTILS.convertMilliToTime(times.minutes_played * 60 * 1000, true) %></div>
-            <div class='lvl-1' id="certsavailable"><label>Cert Available:</label> <%= certs.available_points %></div>
-            <div class='lvl-1' id="certstotal"><label>Cert Total:</label> <%= certs.earned_points %></div>
-*/
-                + divWrapper({'content': 'New Content', 'class': 'new_class', 'id': 'new_id', 'asText': true})        
-                + '<img src="https://players.planetside2.com/images/player/profile/char-default-'+factionmap[chardata.faction_id]+'-'+chardata.active_profile_id+'-'+gender+'.png">' 
+                 + '<div class='lvl-1' id="logincount"><label>Logins:</label> <%= times.login_count %></div>
+                 + '<div class='lvl-1' id="timeplayed"><label>Time Played:</label> <%= UTILS.convertMilliToTime(times.minutes_played * 60 * 1000, true) %></div>
+                    <div class='lvl-1' id="certsavailable"><label>Cert Available:</label> <%= certs.available_points %></div>
+                    <div class='lvl-1' id="certstotal"><label>Cert Total:</label> <%= certs.earned_points %></div>
+                + divWrapper({'content': 'New Content', 'class': 'new_class', 'id': 'new_id', 'asText': true})*/        
+                '<img src="https://players.planetside2.com/images/player/profile/char-default-'+factionmap[chardata.faction_id]+'-'+chardata.active_profile_id+'-'+gender+'.png">' 
+                + '<img width=100px height=100px src="' + $("meta[property='og:image']").attr("content")+ '">'
+                + '<div>Title: ' + $("meta[property='og:title']").attr("content")+ '</div>'
+                + '<div>Description: ' + $("meta[property='og:description']").attr("content")+ '</div>'
         jQuery('#my_unique_id .c').append(frag);
         jQuery('#my_unique_id .c').html(frag);
     }
@@ -159,11 +165,6 @@ function divWrapper(options){
     var divcontent = options.content || null;
     var divclass = options.class || null;
     var divid = options.id || null;
-
-// function divWrapper(content, class, id){
-//     var divcontent = content || null;
-//     var divclass = class || null;
-//     var divid = id || null;
 
     var newdiv = document.createElement('div');
     if(divid) newdiv.id = divid;
